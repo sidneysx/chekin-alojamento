@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Check-in — Alojamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="topbar">
+    <div class="logo-mark"><img src="assets/logo-dpl.png"></div>   
+    <div class="brand-copy">
+      <span class="eyebrow">Alojamento</span>
+      <h1>Sistema de Check-in</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <p class="lede">Informe sua matrícula ou CPF para confirmar presença no alojamento hoje.</p>
+
+    <!-- BUSCA -->
+    <form class="card search-card" id="searchForm" autocomplete="off">
+      <label for="inputBusca">Matrícula ou CPF</label>
+      <div class="input-row">
+        <input id="inputBusca" name="busca" type="text" placeholder="Digite sua matrícula ou CPF" required>
+        <button type="submit" class="btn btn-primary" id="btnBuscar">
+          <span class="btn-label">Buscar</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- CARREGANDO -->
+    <div class="state state-loading" id="stateLoading" hidden>
+      <div class="spinner"></div>
+      <span>Consultando dados...</span>
+    </div>
+
+    <!-- ERRO / NÃO ENCONTRADO -->
+    <div class="state state-error" id="stateError" hidden>
+      <div class="state-icon icon-error">!</div>
+      <p id="errorMsg"></p>
+      <button class="btn btn-ghost btn-block" id="btnErrorRetry">Tentar novamente</button>
+    </div>
+
+    <!-- CARD DO COLABORADOR -->
+    <div class="card result-card" id="employeeCard" hidden>
+      <div class="card-eyebrow">Dados do colaborador</div>
+      <dl class="employee-grid">
+        <div class="field"><dt>Nome</dt><dd id="empNome">—</dd></div>
+        <div class="field"><dt>Matrícula</dt><dd id="empMatricula">—</dd></div>
+        <div class="field"><dt>Setor</dt><dd id="empSetor">—</dd></div>
+        <div class="field"><dt>CPF</dt><dd id="empCpf">—</dd></div>
+      </dl>
+      <button class="btn btn-accent btn-block" id="btnCheckin">
+        <span class="btn-label">Realizar check-in</span>
+      </button>
+    </div>
+
+    <!-- SUCESSO -->
+    <div class="state state-success" id="stateSuccess" hidden>
+      <div class="state-icon icon-success">✓</div>
+      <h2>Check-in realizado com sucesso!</h2>
+      <dl class="employee-grid">
+        <div class="field"><dt>Nome</dt><dd id="okNome">—</dd></div>
+        <div class="field"><dt>Matrícula</dt><dd id="okMatricula">—</dd></div>
+        <div class="field"><dt>Data</dt><dd id="okData">—</dd></div>
+        <div class="field"><dt>Horário</dt><dd id="okHora">—</dd></div>
+      </dl>
+      <button class="btn btn-ghost btn-block" id="btnNovoSuccess">Novo check-in</button>
+    </div>
+
+    <!-- JÁ REALIZOU CHECK-IN -->
+    <div class="state state-warn" id="stateAlready" hidden>
+      <div class="state-icon icon-warn">i</div>
+      <p>Você já realizou seu check-in hoje.</p>
+      <button class="btn btn-ghost btn-block" id="btnNovoWarn">Voltar</button>
+    </div>
+  </main>
+
+  <footer class="footer">Controle interno de acesso ao alojamento</footer>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
