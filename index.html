@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Check-in — Alojamento</title>
+<title>Sistema de Alojamento</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -13,15 +13,15 @@
 <div class="page">
 
   <header class="topbar">
-    <div class="logo-mark"><img src="assets/logo-dpl.png"></div>   
+    <div class="logo-mark"><img src="assets/logo-dpl.png" alt="Logo"></div>
     <div class="brand-copy">
       <span class="eyebrow">Alojamento</span>
-      <h1>Sistema de Check-in</h1>
+      <h1>Check-in e Check-out</h1>
     </div>
   </header>
 
   <main class="container">
-    <p class="lede">Informe sua matrícula ou CPF para confirmar presença no alojamento hoje.</p>
+    <p class="lede">Informe sua matrícula ou CPF para ver seu alojamento ou escolher um.</p>
 
     <!-- BUSCA -->
     <form class="card search-card" id="searchForm" autocomplete="off">
@@ -34,51 +34,77 @@
       </div>
     </form>
 
+    <!-- VISÃO GERAL DOS ALOJAMENTOS (visível antes de buscar) -->
+    <div class="card" id="overviewLodgings">
+      <div class="card-eyebrow">Alojamentos</div>
+      <div class="lodging-list" id="overviewLodgingList">
+        <div class="lodging-empty">Carregando...</div>
+      </div>
+    </div>
+
     <!-- CARREGANDO -->
     <div class="state state-loading" id="stateLoading" hidden>
       <div class="spinner"></div>
-      <span>Consultando dados...</span>
+      <span id="loadingText">Consultando dados...</span>
     </div>
 
-    <!-- ERRO / NÃO ENCONTRADO -->
+    <!-- ERRO -->
     <div class="state state-error" id="stateError" hidden>
       <div class="state-icon icon-error">!</div>
       <p id="errorMsg"></p>
       <button class="btn btn-ghost btn-block" id="btnErrorRetry">Tentar novamente</button>
     </div>
 
-    <!-- CARD DO COLABORADOR -->
-    <div class="card result-card" id="employeeCard" hidden>
-      <div class="card-eyebrow">Dados do colaborador</div>
+    <!-- COLABORADOR JÁ ALOCADO -->
+    <div class="card result-card" id="cardAllocated" hidden>
+      <div class="card-eyebrow">Você já está alojado</div>
       <dl class="employee-grid">
-        <div class="field"><dt>Nome</dt><dd id="empNome">—</dd></div>
-        <div class="field"><dt>Matrícula</dt><dd id="empMatricula">—</dd></div>
-        <div class="field"><dt>Setor</dt><dd id="empSetor">—</dd></div>
-        <div class="field"><dt>CPF</dt><dd id="empCpf">—</dd></div>
+        <div class="field"><dt>Nome</dt><dd id="alocNome">—</dd></div>
+        <div class="field"><dt>Alojamento</dt><dd id="alocAlojamento">—</dd></div>
+        <div class="field"><dt>Desde</dt><dd id="alocData">—</dd></div>
       </dl>
-      <button class="btn btn-accent btn-block" id="btnCheckin">
-        <span class="btn-label">Realizar check-in</span>
+      <button class="btn btn-accent btn-block" id="btnCheckout">
+        <span class="btn-label">Fazer check-out</span>
       </button>
     </div>
 
-    <!-- SUCESSO -->
-    <div class="state state-success" id="stateSuccess" hidden>
+    <!-- ESCOLHER ALOJAMENTO -->
+    <div class="card result-card" id="cardChoose" hidden>
+      <div class="card-eyebrow">Dados do colaborador</div>
+      <dl class="employee-grid employee-grid-compact">
+        <div class="field"><dt>Nome</dt><dd id="chooseNome">—</dd></div>
+        <div class="field"><dt>Matrícula</dt><dd id="chooseMatricula">—</dd></div>
+      </dl>
+
+      <div class="section-label">Escolha um alojamento</div>
+      <div class="lodging-list" id="lodgingList"></div>
+
+      <button class="btn btn-accent btn-block" id="btnConfirmCheckin" disabled>
+        <span class="btn-label">Confirmar check-in</span>
+      </button>
+    </div>
+
+    <!-- SUCESSO CHECK-IN -->
+    <div class="state state-success" id="stateSuccessCheckin" hidden>
       <div class="state-icon icon-success">✓</div>
       <h2>Check-in realizado com sucesso!</h2>
       <dl class="employee-grid">
-        <div class="field"><dt>Nome</dt><dd id="okNome">—</dd></div>
-        <div class="field"><dt>Matrícula</dt><dd id="okMatricula">—</dd></div>
+        <div class="field"><dt>Alojamento</dt><dd id="okAlojamento">—</dd></div>
+        <div class="field"><dt>Endereço</dt><dd id="okEndereco">—</dd></div>
         <div class="field"><dt>Data</dt><dd id="okData">—</dd></div>
-        <div class="field"><dt>Horário</dt><dd id="okHora">—</dd></div>
       </dl>
-      <button class="btn btn-ghost btn-block" id="btnNovoSuccess">Novo check-in</button>
+      <button class="btn btn-ghost btn-block" id="btnNovoAfterCheckin">Voltar</button>
     </div>
 
-    <!-- JÁ REALIZOU CHECK-IN -->
-    <div class="state state-warn" id="stateAlready" hidden>
-      <div class="state-icon icon-warn">i</div>
-      <p>Você já realizou seu check-in hoje.</p>
-      <button class="btn btn-ghost btn-block" id="btnNovoWarn">Voltar</button>
+    <!-- SUCESSO CHECK-OUT -->
+    <div class="state state-success" id="stateSuccessCheckout" hidden>
+      <div class="state-icon icon-success">✓</div>
+      <h2>Check-out realizado com sucesso!</h2>
+      <dl class="employee-grid">
+        <div class="field"><dt>Alojamento</dt><dd id="okCheckoutAlojamento">—</dd></div>
+        <div class="field"><dt>Data de saída</dt><dd id="okCheckoutData">—</dd></div>
+      </dl>
+      <button class="btn btn-ghost btn-block" id="btnNovoAfterCheckout">Voltar</button>
     </div>
   </main>
 

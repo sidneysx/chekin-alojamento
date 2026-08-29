@@ -3,9 +3,6 @@
  * Fluxo: buscar colaborador -> ver se já está alocado
  *   - se já alocado: mostra alojamento atual + botão de check-out
  *   - se não: mostra lista de alojamentos com vagas para escolher e fazer check-in
- *
- * Além disso, a tela inicial (antes de qualquer busca) já mostra uma lista
- * somente informativa dos alojamentos com as vagas livres.
  */
 (function () {
   "use strict";
@@ -14,9 +11,6 @@
   const form = document.getElementById("searchForm");
   const inputBusca = document.getElementById("inputBusca");
   const btnBuscar = document.getElementById("btnBuscar");
-
-  const overviewCard = document.getElementById("overviewLodgings");
-  const overviewLodgingList = document.getElementById("overviewLodgingList");
 
   const stateLoading = document.getElementById("stateLoading");
   const loadingText = document.getElementById("loadingText");
@@ -48,13 +42,11 @@
   function esconderTudo() {
     ALL_STATES.forEach((el) => (el.hidden = true));
     form.hidden = false;
-    overviewCard.hidden = false;
   }
   function mostrar(el) {
     esconderTudo();
     el.hidden = false;
     form.hidden = true;
-    overviewCard.hidden = true;
   }
   function setBotaoCarregando(btn, carregando) {
     btn.disabled = carregando;
@@ -63,43 +55,6 @@
   function mostrarErro(msg) {
     errorMsg.textContent = msg;
     mostrar(stateError);
-  }
-
-  // ---------- 0) visão geral dos alojamentos (tela inicial) ----------
-  async function carregarVisaoGeral() {
-    try {
-      const resp = await listarAlojamentos();
-      if (!resp.success) {
-        overviewLodgingList.innerHTML = '<div class="lodging-empty">Não foi possível carregar os alojamentos.</div>';
-        return;
-      }
-      renderizarListaSomenteLeitura(resp.data || []);
-    } catch (e) {
-      overviewLodgingList.innerHTML = '<div class="lodging-empty">Não foi possível carregar os alojamentos.</div>';
-    }
-  }
-
-  function renderizarListaSomenteLeitura(lista) {
-    overviewLodgingList.innerHTML = "";
-    if (lista.length === 0) {
-      overviewLodgingList.innerHTML = '<div class="lodging-empty">Nenhum alojamento cadastrado.</div>';
-      return;
-    }
-    lista.forEach((aloj) => {
-      const cheio = aloj.vagas_disponiveis <= 0;
-      const opt = document.createElement("div");
-      opt.className = "lodging-option readonly";
-      opt.innerHTML = `
-        <div class="lodging-info">
-          <div class="lodging-name">${escapeHtml(aloj.nome)}</div>
-          <div class="lodging-address">${escapeHtml(aloj.endereco || "")}</div>
-        </div>
-        <div class="lodging-beds ${cheio ? "full" : "available"}">
-          ${cheio ? "Lotado" : aloj.vagas_disponiveis + " vaga" + (aloj.vagas_disponiveis === 1 ? "" : "s") + " livre" + (aloj.vagas_disponiveis === 1 ? "" : "s")}
-        </div>
-      `;
-      overviewLodgingList.appendChild(opt);
-    });
   }
 
   // ---------- 1) busca do colaborador ----------
@@ -206,7 +161,7 @@
   }
 
   function selecionarAlojamento(el, aloj) {
-    document.querySelectorAll("#lodgingList .lodging-option").forEach((o) => o.classList.remove("selected"));
+    document.querySelectorAll(".lodging-option").forEach((o) => o.classList.remove("selected"));
     el.classList.add("selected");
     alojamentoEscolhido = aloj;
     btnConfirmCheckin.disabled = false;
@@ -267,12 +222,8 @@
     inputBusca.value = "";
     esconderTudo();
     inputBusca.focus();
-    carregarVisaoGeral(); // atualiza a lista inicial com os números mais recentes
   }
   btnNovoAfterCheckin.addEventListener("click", reiniciar);
   btnNovoAfterCheckout.addEventListener("click", reiniciar);
   btnErrorRetry.addEventListener("click", () => { esconderTudo(); inputBusca.focus(); });
-
-  // ---------- inicialização ----------
-  carregarVisaoGeral();
 })();
